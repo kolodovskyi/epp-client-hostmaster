@@ -10,7 +10,7 @@ Gem::Specification.new do |gem|
   gem.email         = %w{kolodovskyy@ukrindex.com}
   gem.description   = %q{Hostmaster.UA EPP client library}
   gem.summary       = %q{Hostmaster.UA EPP client library}
-  gem.homepage      = "http://www.ukrindex.com"
+  gem.homepage      = "https://github.com/kolodovskyy/epp-client-hostmaster"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
