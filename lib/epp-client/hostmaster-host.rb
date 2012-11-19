@@ -118,7 +118,7 @@ module EPPClient
       command do |xml|
         xml.create do
           xml.host :create, 'xmlns:host' => EPPClient::SCHEMAS_URL['host-1.1'] do
-            xml.host :name, args[:name]
+            xml.host :name, host[:name]
             if host.key? :addr
               host[:addr].each {|ip| xml.host :addr, ip}
             end
@@ -127,12 +127,44 @@ module EPPClient
       end
     end
 
-    # TODO: doc
+    # Creates a host
+    #
+    # Takes a hash as an argument containing the following keys :
+    # [<tt>:name</tt>] host name.
+    # [<tt>:addr</tt>] array with IP addresses (4 and 6 versions).
+    #   representing the IP address. The value is a array with IP addresses.
     def host_create(contact)
       response = send_request(host_create_xml(contact))
       get_result(:xml => response, :callback => :host_create_process)
     end
 
-    # TODO: continue...
+    def host_create_process(xml) #:nodoc:
+      contact = xml.xpath('epp:resData/host:creData', EPPClient::SCHEMAS_URL)
+      {
+        name: contact.xpath('host:name', EPPClient::SCHEMAS_URL).text,
+        crDate: DateTime.parse(contact.xpath('host:crDate', EPPClient::SCHEMAS_URL).text)
+      }
+    end
+
+    def host_delete_xml(host) #:nodoc:
+      command do |xml|
+        xml.delete do
+          xml.host :delete, 'xmlns:host' => EPPClient::SCHEMAS_URL['host-1.1'] do
+            xml.host :name, host
+          end
+        end
+      end
+    end
+
+    # Deletes a host
+    #
+    # Takes a single host for argument.
+    #
+    # Returns true on success, or raises an exception.
+    def host_delete(host)
+      response = send_request(host_delete_xml(host))
+      get_result(response)
+    end
+
   end
 end
