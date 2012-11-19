@@ -1,6 +1,6 @@
-# Hostmaster.UA EPP (Extensible Provisioning Protocol) client library
+# Hostmaster.UA EPP client library
 
-EPP client library based on [epp-client-base](https://rubygems.org/gems/epp-client-base) gem.
+EPP (Extensible Provisioning Protocol) client library based on [epp-client-base](https://rubygems.org/gems/epp-client-base) gem.
 Full specification see at [Hostmaster.UA EPP Project](https://epp.hostmaster.ua).
 
 ## Installation
