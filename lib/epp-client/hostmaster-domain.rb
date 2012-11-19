@@ -59,22 +59,19 @@ module EPPClient
       end
     end
 
+    def domain_period_xml(xml, period)
+      xml.domain :period, { unit: period[:unit] }, period[:number]
+    end
+
     def domain_create_xml(args) #:nodoc:
       command do |xml|
         xml.create do
           xml.domain :create, 'xmlns:domain' => EPPClient::SCHEMAS_URL['domain-1.1'] do
             xml.domain :name, args[:name]
-
-            if args.key?(:period)
-              xml.domain :period, { unit: args[:period][:unit] }, args[:period][:number]
-            end
-
+            domain_period_xml(xml, args[:period]) if args.key?(:period)
             domain_nss_xml(xml, args[:ns]) if args.key? :ns
-
             xml.domain :registrant, args[:registrant]
-
             domain_contacts_xml(xml, args[:contacts])
-
             xml.domain :license, args[:license] if args.key? :license
           end
         end
@@ -107,7 +104,7 @@ module EPPClient
           xml.domain :renew, 'xmlns:domain' => EPPClient::SCHEMAS_URL['domain-1.1'] do
             xml.domain :name, domain[:name]
             xml.domain :curExpDate, domain[:curExpDate].strftime('%Y-%m-%d')
-            xml.domain :period, { unit: domain[:period][:unit] }, domain[:period][:number]
+            domain_period_xml(xml, domain[:period])
           end
         end
       end
