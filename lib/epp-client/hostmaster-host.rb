@@ -131,18 +131,21 @@ module EPPClient
     #
     # Takes a hash as an argument containing the following keys :
     # [<tt>:name</tt>] host name.
-    # [<tt>:addr</tt>] array with IP addresses (4 and 6 versions).
-    #   representing the IP address. The value is a array with IP addresses.
-    def host_create(contact)
-      response = send_request(host_create_xml(contact))
+    # [<tt>:addr</tt>] array with IP addresses (4 or 6 versions).
+    #   representing the IP address. The value is a array with IP addresses or single.
+    def host_create(host)
+      if host.key?(:addr)
+        host[:addr] = [ host[:addr] ] unless host[:addr].is_a? Array
+      end
+      response = send_request(host_create_xml(host))
       get_result(:xml => response, :callback => :host_create_process)
     end
 
     def host_create_process(xml) #:nodoc:
-      contact = xml.xpath('epp:resData/host:creData', EPPClient::SCHEMAS_URL)
+      host = xml.xpath('epp:resData/host:creData', EPPClient::SCHEMAS_URL)
       {
-        name: contact.xpath('host:name', EPPClient::SCHEMAS_URL).text,
-        crDate: DateTime.parse(contact.xpath('host:crDate', EPPClient::SCHEMAS_URL).text)
+        name: host.xpath('host:name', EPPClient::SCHEMAS_URL).text,
+        crDate: DateTime.parse(host.xpath('host:crDate', EPPClient::SCHEMAS_URL).text)
       }
     end
 
