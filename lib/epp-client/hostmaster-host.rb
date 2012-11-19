@@ -66,8 +66,8 @@ module EPPClient
     #   the Repository Object IDentifier assigned to the host object when
     #   the object was created.
     # [<tt>:status</tt>] the status or array of statuses of the host object.
-    # [<tt>:addr</tt>] array with IP addresses (4 and 6 versions).
-    #   representing the IP address. The value is a array with IP addresses.
+    # [<tt>:addrv4</tt>] array with IPv4 addresses.
+    # [<tt>:addrv6</tt>] array with IPv6 addresses.
     # [<tt>:clID</tt>] the identifier of the sponsoring client.
     # [<tt>:crID</tt>]
     #   the identifier of the client that created the host object.
@@ -97,8 +97,11 @@ module EPPClient
         ret[:status] = status.map {|s| s.attr('s')}
       end
 
-      if (value = host.xpath('host:addr', EPPClient::SCHEMAS_URL)).size > 0
-        ret[:addr] = value.map {|ip| IPAddr.new(ip.text)}
+      if (value = host.xpath('host:addr', EPPClient::SCHEMAS_URL, ip: 'v4')).size > 0
+        ret[:addrv4] = value.map {|ip| IPAddr.new(ip.text)}
+      end
+      if (value = host.xpath('host:addr', EPPClient::SCHEMAS_URL, ip: 'v6')).size > 0
+        ret[:addrv6] = value.map {|ip| IPAddr.new(ip.text)}
       end
 
       %w(clID crID upID).each do |val|
@@ -119,8 +122,9 @@ module EPPClient
         xml.create do
           xml.host :create, 'xmlns:host' => EPPClient::SCHEMAS_URL['host-1.1'] do
             xml.host :name, host[:name]
-            if host.key? :addr
-              host[:addr].each {|ip| xml.host :addr, ip}
+            %w(addrv4 addrv6).each do |type|
+              next unless host.key? type
+              host[type].each {|ip| xml.host :addr, ip}
             end
           end
         end
@@ -131,11 +135,12 @@ module EPPClient
     #
     # Takes a hash as an argument containing the following keys :
     # [<tt>:name</tt>] host name.
-    # [<tt>:addr</tt>] array with IP addresses (4 or 6 versions).
-    #   representing the IP address. The value is a array with IP addresses or single.
+    # [<tt>:addrv4</tt>] array with IPv4 addresses.
+    # [<tt>:addrv6</tt>] array with IPv6 addresses.
     def host_create(host)
-      if host.key?(:addr)
-        host[:addr] = [ host[:addr] ] unless host[:addr].is_a? Array
+      %w(addrv4 addrv6).each do |type|
+        next unless host.key? type
+        host[type] = [ host[type] ] unless host[type].is_a? Array
       end
       response = send_request(host_create_xml(host))
       get_result(:xml => response, :callback => :host_create_process)
@@ -178,7 +183,10 @@ module EPPClient
               if args.key? operation
                 xml.host operation do
                   args[operation][:status].each {|s| xml.host :status, s: s} if args[operation].key? :status
-                  args[operation][:addr].each {|addr| xml.host :addr, addr} if args[operation].key? :addr
+                  %w(addrv4 addrv6).each do |type|
+                    next unless args[operation].key? type
+                    args[operation][type].each {|a| xml.host type, a}
+                  end
                 end
               end
             end
@@ -194,14 +202,18 @@ module EPPClient
     #   the server-unique identifier of the host object to be updated.
     # [<tt>:add</tt>/<tt>:rem</tt>]
     #   adds or removes the following data from the host object :
-    #   [<tt>:addr</tt>] an array of IP addresses.
+    #   [<tt>:addrv4</tt>] an array of IPv4 addresses.
+    #   [<tt>:addrv6</tt>] an array of IPv6 addresses.
     #   [<tt>:status</tt>] an array of status to add to/remove from the object.
     #
     # Returns true on success, or raises an exception.
     def host_update(args)
       [:add, :rem].each do |operation|
-        next unless args.key?(operation) and args[operation].key?(:addr)
-        args[operation][:addr] = [ args[operation][:addr] ] unless args[operation][:addr].is_a? Array
+        next unless args.key?(operation)
+        %w(addrv4 addrv6).each do |type|
+          next unless args[operation].key? type
+          args[operation][type] = [ args[operation[type]] ] unless args[operation][type].is_a? Array
+        end
       end
       response = send_request(host_update_xml(args))
       get_result(response)
