@@ -166,5 +166,43 @@ module EPPClient
       get_result(response)
     end
 
+    def host_update_xml(args) #:nodoc:
+      command do |xml|
+        xml.update do
+          xml.host :update, 'xmlns:host' => EPPClient::SCHEMAS_URL['host-1.1'] do
+            xml.host :name, args[:name]
+            [:add, :rem].each do |operation|
+              if args.key? operation
+                xml.host operation do
+                  args[operation][:status].each {|s| xml.host :status, s: s} if args[operation].key? :status
+                  args[operation][:addr].each {|addr| xml.host :addr, addr} if args[operation].key? :addr
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+
+    # Updates a host
+    #
+    # Takes a hash with the name, and at least one of the following keys :
+    # [<tt>:name</tt>]
+    #   the server-unique identifier of the host object to be updated.
+    # [<tt>:add</tt>/<tt>:rem</tt>]
+    #   adds or removes the following data from the host object :
+    #   [<tt>:addr</tt>] an array of IP addresses.
+    #   [<tt>:status</tt>] an array of status to add to/remove from the object.
+    #
+    # Returns true on success, or raises an exception.
+    def host_update(args)
+      [:add, :rem].each do |operation|
+        next unless args.key?(operation) and args[operation].key?(:addr)
+        args[operation][:addr] = [ args[operation][:addr] ] unless args[operation][:addr].is_a? Array
+      end
+      response = send_request(host_update_xml(args))
+      get_result(response)
+    end
+
   end
 end
