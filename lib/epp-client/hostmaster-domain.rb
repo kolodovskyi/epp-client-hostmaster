@@ -76,7 +76,6 @@ module EPPClient
             domain_contacts_xml(xml, args[:contacts])
 
             xml.domain :license, args[:license] if args.key? :license
-
           end
         end
       end
@@ -145,6 +144,42 @@ module EPPClient
         name: dom.xpath('domain:name', EPPClient::SCHEMAS_URL).text,
         exDate: DateTime.parse(dom.xpath('domain:exDate', EPPClient::SCHEMAS_URL).text)
       }
+    end
+
+    def domain_update_xml(args) #:nodoc:
+      command do |xml|
+        xml.update do
+          xml.domain :update, 'xmlns:domain' => EPPClient::SCHEMAS_URL['domain-1.1'] do
+            xml.domain :name, args[:name]
+            [:add, :rem].each do |ar|
+              next unless args.key?(ar) && (args[ar].key?(:ns) || args[ar].key?(:contacts) || args[ar].key?(:status))
+              xml.domain ar do
+                domain_nss_xml(xml, args[ar][:ns]) if args[ar].key? :ns
+                domain_contacts_xml(xml, args[ar][:contacts]) if args[ar].key? :contacts
+                if args[ar].key? :status
+                  args[ar][:status].each do |st,text|
+                    if text.nil?
+                      xml.domain :status, s: st
+                    else
+                      xml.domain :status, { s: st }, text
+                    end
+                  end
+                end
+              end
+            end
+            if args.key?(:chg) && (args[:chg].key?(:registrant) || args[:chg].key?(:authInfo))
+              xml.domain :chg do
+                xml.domain :registrant, args[:chg][:registrant] if args[:chg].key? :registrant
+                if args[:chg].key? :authInfo
+                  xml.domain :authInfo do
+                    xml.domain :pw, args[:chg][:authInfo]
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
     end
 
   end

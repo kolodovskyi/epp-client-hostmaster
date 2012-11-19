@@ -5,6 +5,7 @@ require "epp-client/hostmaster-domain"
 require "epp-client/hostmaster-contact"
 require "epp-client/hostmaster-host"
 require "epp-client/hostmaster-rgp"
+require "epp-client/hostmaster-transfer"
 
 module EPPClient
   class Hostmaster < Base
@@ -24,6 +25,7 @@ module EPPClient
     include EPPClient::HostmasterContact
     include EPPClient::HostmasterHost
     include EPPClient::HostmasterRGP
+    include EPPClient::HostmasterTransfer
 
     def initialize(attrs)
       unless attrs.key?(:client_id) && attrs.key?(:password) && attrs.key?(:ssl_cert) && attrs.key?(:ssl_key)
