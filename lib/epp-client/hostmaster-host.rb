@@ -122,9 +122,11 @@ module EPPClient
         xml.create do
           xml.host :create, 'xmlns:host' => EPPClient::SCHEMAS_URL['host-1.1'] do
             xml.host :name, host[:name]
-            %w(addrv4 addrv6).each do |type|
-              next unless host.key? type
-              host[type].each {|ip| xml.host :addr, ip}
+            if host.key? :addrv4
+              host[:addrv4].each { |ip| xml.host :addr, { ip: 'v4' }, ip }
+            end
+            if host.key? :addrv6
+              host[:addrv6].each { |ip| xml.host :addr, { ip: 'v6' }, ip }
             end
           end
         end
@@ -183,9 +185,11 @@ module EPPClient
               if args.key? operation
                 xml.host operation do
                   args[operation][:status].each {|s| xml.host :status, s: s} if args[operation].key? :status
-                  %w(addrv4 addrv6).each do |type|
-                    next unless args[operation].key? type
-                    args[operation][type].each {|a| xml.host type, a}
+                  if args[operation].key? :addrv4
+                    args[operation][:addrv4].each { |ip| xml.host :addr, { ip: 'v4' }, ip }
+                  end
+                  if args[operation].key? :addrv6
+                    args[operation][:addrv6].each { |ip| xml.host :addr, { ip: 'v6' }, ip }
                   end
                 end
               end

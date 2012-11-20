@@ -25,6 +25,21 @@ module EPPClient
       end
     end
 
+    def contact_disclose_xml(xml, disclose)
+      [:show, :hide].each do |operation|
+        next unless disclose.key? operation
+        xml.contact :disclose, flag: operation == :show ? '1' : '0' do
+          disclose[operation].each do |element|
+            if element.key? :type
+              xml.contact element[:name].to_sym, type: element[:type]
+            else
+              xml.contact element[:name].to_sym
+            end
+          end
+        end
+      end
+    end
+
     def contact_create_xml(contact)
       command do |xml|
         xml.create do
@@ -55,17 +70,7 @@ module EPPClient
             xml.contact :authInfo do
               xml.contact :pw, contact[:authInfo]
             end
-            if contact.key?(:disclose)
-              xml.contact :disclose, flag: '1' do # TODO: parameter for flag need
-                contact[:disclose].each do |disc|
-                  if disc.key?(:type)
-                    xml.contact disc[:name], type: disc[:type]
-                  else
-                    xml.contact disc[:name]
-                  end
-                end
-              end
-            end
+            contact_disclose_xml(xml, contact[:disclose]) if contact.key?(:disclose)
           end
         end
       end
@@ -128,17 +133,7 @@ module EPPClient
                     xml.contact :pw, contact[:authInfo]
                   end
                 end
-                if contact.key?(:disclose)
-                  xml.contact :disclose, flag: '1' do # TODO: parameter for flag need
-                    contact[:disclose].each do |disc|
-                      if disc.key?(:type)
-                        xml.contact disc[:name], type: disc[:type]
-                      else
-                        xml.contact disc[:name]
-                      end
-                    end
-                  end
-                end
+                contact_disclose_xml(xml, contact[:disclose]) if contact.key?(:disclose)
               end
             end
           end
