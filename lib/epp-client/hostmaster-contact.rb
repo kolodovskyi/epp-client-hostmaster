@@ -54,8 +54,10 @@ module EPPClient
                 xml.contact :name, infos[:name]
                 xml.contact :org, infos[:org] if infos.key?(:org)
                 xml.contact :addr do
-                  infos[:addr][:street].each do |street|
-                    xml.contact :street, street
+                  if infos[:addr].key? :street
+                    infos[:addr][:street].each do |street|
+                      xml.contact :street, street
+                    end
                   end
                   xml.contact :city, infos[:addr][:city]
                   xml.contact :sp, infos[:addr][:sp] if infos[:addr].key? :sp

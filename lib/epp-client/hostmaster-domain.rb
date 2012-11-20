@@ -71,7 +71,7 @@ module EPPClient
             domain_period_xml(xml, args[:period]) if args.key?(:period)
             domain_nss_xml(xml, args[:ns]) if args.key? :ns
             xml.domain :registrant, args[:registrant]
-            domain_contacts_xml(xml, args[:contacts])
+            domain_contacts_xml(xml, args[:contacts]) if args.key? :contacts
             xml.domain :license, args[:license] if args.key? :license
           end
         end
