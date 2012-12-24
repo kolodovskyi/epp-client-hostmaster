@@ -18,6 +18,6 @@ Gem::Specification.new do |gem|
   gem.require_paths = %w{lib}
 
   gem.add_development_dependency "bundler"
-  gem.add_dependency('epp-client-base', '~> 0.11.0')
-  gem.add_dependency('builder', '~> 3.1.4')
+  gem.add_dependency "epp-client-base", "~> 0.11.0"
+  gem.add_dependency "builder"
 end
