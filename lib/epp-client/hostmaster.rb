@@ -9,7 +9,7 @@ require "epp-client/hostmaster-transfer"
 
 module EPPClient
   class Hostmaster < Base
-    VERSION = '0.2.1'
+    VERSION = '0.2.2'
 
     SCHEMAS = %w(domain-1.1 host-1.1 contact-1.1 rgp-1.1)
 
