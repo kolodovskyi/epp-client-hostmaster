@@ -1,5 +1,3 @@
-require "ipaddr"
-
 module EPPClient
   module HostmasterHost
     def host_check_xml(*hosts) #:nodoc:
@@ -98,10 +96,10 @@ module EPPClient
       end
 
       if (value = host.xpath('host:addr[@ip="v4"]', EPPClient::SCHEMAS_URL)).size > 0
-        ret[:addrv4] = value.map {|ip| IPAddr.new(ip.text)}
+        ret[:addrv4] = value.map {|ip| ip.text }
       end
       if (value = host.xpath('host:addr[@ip="v6"]', EPPClient::SCHEMAS_URL)).size > 0
-        ret[:addrv6] = value.map {|ip| IPAddr.new(ip.text)}
+        ret[:addrv6] = value.map {|ip| ip.text }
       end
 
       %w(clID crID upID).each do |val|
