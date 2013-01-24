@@ -97,10 +97,10 @@ module EPPClient
         ret[:status] = status.map {|s| s.attr('s')}
       end
 
-      if (value = host.xpath('host:addr', EPPClient::SCHEMAS_URL, ip: 'v4')).size > 0
+      if (value = host.xpath('host:addr[@ip="v4"]', EPPClient::SCHEMAS_URL)).size > 0
         ret[:addrv4] = value.map {|ip| IPAddr.new(ip.text)}
       end
-      if (value = host.xpath('host:addr', EPPClient::SCHEMAS_URL, ip: 'v6')).size > 0
+      if (value = host.xpath('host:addr[@ip="v6"]', EPPClient::SCHEMAS_URL)).size > 0
         ret[:addrv6] = value.map {|ip| IPAddr.new(ip.text)}
       end
 

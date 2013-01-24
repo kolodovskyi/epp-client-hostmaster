@@ -1,1 +1,1 @@
-require "epp-client/hostmaster"
+require "#{File.dirname(__FILE__)}/epp-client/hostmaster"

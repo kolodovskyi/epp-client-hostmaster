@@ -1,15 +1,15 @@
 require "epp-client/base"
-require "epp-client/hostmaster-xml"
-require "epp-client/hostmaster-connection"
-require "epp-client/hostmaster-domain"
-require "epp-client/hostmaster-contact"
-require "epp-client/hostmaster-host"
-require "epp-client/hostmaster-rgp"
-require "epp-client/hostmaster-transfer"
+require "#{File.dirname(__FILE__)}/hostmaster-xml"
+require "#{File.dirname(__FILE__)}/hostmaster-connection"
+require "#{File.dirname(__FILE__)}/hostmaster-domain"
+require "#{File.dirname(__FILE__)}/hostmaster-contact"
+require "#{File.dirname(__FILE__)}/hostmaster-host"
+require "#{File.dirname(__FILE__)}/hostmaster-rgp"
+require "#{File.dirname(__FILE__)}/hostmaster-transfer"
 
 module EPPClient
   class Hostmaster < Base
-    VERSION = '0.2.2'
+    VERSION = '0.2.3'
 
     SCHEMAS = %w(domain-1.1 host-1.1 contact-1.1 rgp-1.1)
 
