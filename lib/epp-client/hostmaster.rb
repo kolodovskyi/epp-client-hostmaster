@@ -9,7 +9,7 @@ require "#{File.dirname(__FILE__)}/hostmaster-transfer"
 
 module EPPClient
   class Hostmaster < Base
-    VERSION = '0.2.3'
+    VERSION = '0.2.4'
 
     SCHEMAS = %w(domain-1.1 host-1.1 contact-1.1 rgp-1.1)
 
