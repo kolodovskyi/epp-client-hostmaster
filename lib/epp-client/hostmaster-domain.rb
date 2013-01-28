@@ -27,8 +27,8 @@ module EPPClient
 
     def domain_nss_xml(xml, nss)
       xml.domain :ns do
-        if nss.first.is_a? Hash
-          nss.each do |ns|
+        nss.each do |ns|
+          if ns.is_a? Hash
             xml.domain :hostAttr do
               xml.domain :hostName, ns[:hostName]
               if ns.key?(:hostAddrv4)
@@ -42,9 +42,7 @@ module EPPClient
                 end
               end
             end
-          end
-        else
-          nss.each do |ns|
+          else
             xml.domain :hostObj, ns
           end
         end
