@@ -1,4 +1,5 @@
 require "epp-client/base"
+require "#{File.dirname(__FILE__)}/hostmaster-version"
 require "#{File.dirname(__FILE__)}/hostmaster-xml"
 require "#{File.dirname(__FILE__)}/hostmaster-connection"
 require "#{File.dirname(__FILE__)}/hostmaster-domain"
@@ -9,7 +10,7 @@ require "#{File.dirname(__FILE__)}/hostmaster-transfer"
 
 module EPPClient
   class Hostmaster < Base
-    VERSION = '0.2.6'
+    include EPPClient::HostmasterVersion
 
     SCHEMAS = %w(domain-1.1 host-1.1 contact-1.1 rgp-1.1)
 
