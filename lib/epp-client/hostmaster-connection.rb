@@ -6,5 +6,10 @@ module EPPClient
       @socket.write xml
       sent_frame_to_xml
     end
+
+    def close_connection
+      log.close unless log.nil?
+      super
+    end
   end
 end

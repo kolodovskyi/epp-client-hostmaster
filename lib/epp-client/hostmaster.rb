@@ -32,11 +32,22 @@ module EPPClient
       unless attrs.key?(:client_id) && attrs.key?(:password) && attrs.key?(:ssl_cert) && attrs.key?(:ssl_key)
         raise ArgumentError, "client_id, password, ssl_cert and ssl_key are required"
       end
+      if attrs.key?(:log_path)
+        @log_path = attrs[:log_path]
+        attrs.delete :log_path
+      end
       attrs[:server] ||= 'epp.hostmaster.ua'
       attrs[:port] ||= 700
       attrs[:version] ||= '1.0'
       @services = EPPClient::SCHEMAS_URL.values_at('domain', 'host', 'contact')
       super(attrs)
+    end
+
+    def log
+      if @log.nil? && !@log_path.nil?
+        @log = File.open("#@log_path/#{Time.now.to_i}.log", "w")
+      end
+      @log
     end
   end
 end
